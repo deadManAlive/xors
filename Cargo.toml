@@ -11,3 +11,6 @@ path = "src/filter_utils.rs"
 [[bin]]
 name = "xors"
 path = "src/main.rs"
+
+[dependencies]
+num = "0.4.0"

@@ -7,5 +7,9 @@ use butter::Butt2Ord;
 fn main() {
     let mut f = Butt2Ord::zero();
     f.init(10f64, 100f64);
-    println!("{:#?}", f.abs());
+
+    let mag = f.abs();
+    let mag: Vec<f64> = mag.into_iter().map(|val| 20.0 * val.log10()).collect();
+
+    println!("{:#?}", mag);
 }

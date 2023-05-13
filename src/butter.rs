@@ -1,5 +1,6 @@
-use std::f64::consts::PI;
 use filter_utils::{self, Filter};
+use num::complex::{Complex64};
+use std::f64::consts::PI;
 
 use crate::utils::linspace;
 
@@ -14,9 +15,9 @@ impl Butt2Ord {
     /// Initiate and empty (all coeffs are zero) 2nd-order butterworth filter
     pub fn zero() -> Self {
         Self {
-            numerator: [0f64; 3],
-            denumerator: [0f64; 3],
-            sample_rate: 0f64,
+            numerator: [0.0; 3],
+            denumerator: [0.0; 3],
+            sample_rate: 0.0,
         }
     }
 }
@@ -33,24 +34,53 @@ impl Filter<5> for Butt2Ord {
     fn init(&mut self, fc: f64, fs: f64) {
         self.sample_rate = fs;
 
-        let wc = 2f64 * PI * fc / fs;
-        let c_wwc = (wc / 2f64).tan();
+        let wc = 2.0 * PI * fc / fs;
+        let c_wwc = (wc / 2.0).tan();
         let c_wwc2 = c_wwc.powi(2);
-        let c = 1f64 + 2f64 * (PI / 4f64).cos() * c_wwc + c_wwc2;
+        let c = 1.0 + 2.0 * (PI / 4.0).cos() * c_wwc + c_wwc2;
 
         let a0 = c_wwc2 / c;
-        let a1 = 2f64 * a0;
+        let a1 = 2.0 * a0;
         let a2 = a0;
 
-        let b1 = 2f64 * (c_wwc2 - 1f64) / c;
-        let b2 = (1f64 - 2f64 * (3f64 * PI / 4f64) * c_wwc * c_wwc2) / c;
+        let b1 = 2.0 * (c_wwc2 - 1.0) / c;
+        let b2 = (1.0 - 2.0 * (3.0 * PI / 4.0) * c_wwc * c_wwc2) / c;
 
         self.numerator = [a0, a1, a2];
         self.denumerator = [1f64, b1, b2];
     }
 
     fn abs(&self) -> Vec<f64> {
-        linspace(0f64, self.sample_rate, 256)
+        let re_gen = |val: &f64| {
+            Complex64::new(*val, 0.0)
+        };
+
+        let z_gen = |w: f64| {
+            Complex64::new(0.0, w)
+        };
+
+        let num = |w: f64| {
+            let n0 = re_gen(self.get_num(0).unwrap());
+            let n1 = re_gen(self.get_num(1).unwrap()) * z_gen(-w).exp();
+            let n2 = re_gen(self.get_num(2).unwrap()) * z_gen(-2.0 * w).exp();
+
+            let d0 = re_gen(&1.0);
+            let d1 = re_gen(self.get_den(1).unwrap()) * z_gen(-w).exp();
+            let d2 = re_gen(self.get_den(2).unwrap()) * z_gen(-2.0 * w).exp();
+
+            (n0 + n1 + n2) / (d0 + d1 + d2)
+        };
+
+        let t = linspace(0.0, PI, 16);
+
+        let mut res: Vec<f64> = vec![];
+
+        for f in t {
+            let mag = (num(f).re.powi(2) + num(f).im.powi(2)).sqrt();
+            res.push(mag);
+        }
+
+        res
     }
 
     fn process(&self, buffer: &mut Vec<f64>) {
