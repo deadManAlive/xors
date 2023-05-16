@@ -10,6 +10,6 @@ where
     /// Calculate coefficients from cutoff freq (fc) and sample
     /// rate (fs). Both in Hz.
     fn init(&mut self, fc: f64, fs: f64);
-    fn abs(&self) -> Vec<f64>;
+    fn abs(&self, n_segments: usize) -> Vec<f64>;
     fn process(&self, buffer: &mut Vec<f64>);
 }

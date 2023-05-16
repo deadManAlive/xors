@@ -50,7 +50,7 @@ impl Filter<5> for Butt2Ord {
         self.denumerator = [1f64, b1, b2];
     }
 
-    fn abs(&self) -> Vec<f64> {
+    fn abs(&self, n_segments: usize) -> Vec<f64> {
         let re_gen = |val: &f64| {
             Complex64::new(*val, 0.0)
         };
@@ -71,7 +71,7 @@ impl Filter<5> for Butt2Ord {
             (n0 + n1 + n2) / (d0 + d1 + d2)
         };
 
-        let t = linspace(0.0, PI, 16);
+        let t = linspace(0.0, PI, n_segments);
 
         let mut res: Vec<f64> = vec![];
 
