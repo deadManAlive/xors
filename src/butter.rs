@@ -1,5 +1,5 @@
 use filter_utils::{self, Filter};
-use num::complex::{Complex64};
+use num::complex::Complex64;
 use std::f64::consts::PI;
 
 use crate::utils::linspace;
@@ -50,14 +50,16 @@ impl Filter<5> for Butt2Ord {
         self.denumerator = [1f64, b1, b2];
     }
 
-    fn abs(&self, n_segments: usize) -> Vec<f64> {
-        let re_gen = |val: &f64| {
-            Complex64::new(*val, 0.0)
-        };
+    fn process(&self, buffer: &mut Vec<f64>) {
+        let _ = buffer.len();
+    }
+}
 
-        let z_gen = |w: f64| {
-            Complex64::new(0.0, w)
-        };
+impl Butt2Ord {
+    pub fn abs(&self, n_segments: usize) -> (Vec<f64>, Vec<f64>) {
+        let re_gen = |val: &f64| Complex64::new(*val, 0.0);
+
+        let z_gen = |w: f64| Complex64::new(0.0, w);
 
         let num = |w: f64| {
             let n0 = re_gen(self.get_num(0).unwrap());
@@ -71,19 +73,15 @@ impl Filter<5> for Butt2Ord {
             (n0 + n1 + n2) / (d0 + d1 + d2)
         };
 
-        let t = linspace(0.0, PI, n_segments);
+        let f_arr = linspace(-PI, PI, n_segments);
 
         let mut res: Vec<f64> = vec![];
 
-        for f in t {
-            let mag = (num(f).re.powi(2) + num(f).im.powi(2)).sqrt();
+        for f in &f_arr {
+            let mag = (num(*f).re.powi(2) + num(*f).im.powi(2)).sqrt();
             res.push(mag);
         }
 
-        res
-    }
-
-    fn process(&self, buffer: &mut Vec<f64>) {
-        let _ = buffer.len();
+        (res, f_arr)
     }
 }
