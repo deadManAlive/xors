@@ -1,8 +1,5 @@
 use filter_utils::{self, Filter};
-use num::complex::Complex64;
 use std::f64::consts::PI;
-
-use crate::utils::linspace;
 
 #[derive(Debug, Clone, Copy)]
 pub struct Butt2Ord {

@@ -1,5 +1,9 @@
 # folders
 /target
 /.vscode
+/.venv
+
 # files
 output.html
+*.py
+.python-version
