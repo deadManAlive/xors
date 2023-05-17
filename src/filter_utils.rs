@@ -33,11 +33,11 @@ where
             h.push(num_eval / den_eval);
         }
 
-        let w = w
-            .into_iter()
-            .map(|val| val * self.get_sample_rate() / (2. * PI))
-            .collect();
-
-        (w, h)
+        (
+            w.iter()
+                .map(|val| val * self.get_sample_rate() / (2. * PI))
+                .collect(),
+            h,
+        )
     }
 }

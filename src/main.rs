@@ -1,4 +1,5 @@
 mod butter;
+mod plot_utils;
 mod utils;
 
 use butter::Butt2Ord;
@@ -20,7 +21,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let (w, h) = f.freqz(512);
 
-    let h = h.into_iter().map(|f| 20. * f64::log10(f.abs())).collect();
+    let h = h.iter().map(|f| 20. * f64::log10(f.abs())).collect();
 
     let mut plot = Plot::new();
     let scatter = Scatter::new(w, h).mode(Mode::Lines).name("Mag");

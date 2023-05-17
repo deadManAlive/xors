@@ -34,11 +34,11 @@ where
 
     let mut res = U::from(*coeffs.last().unwrap());
 
-    for (i, c) in coeffs.into_iter().rev().enumerate() {
+    for (i, c) in coeffs.iter().rev().enumerate() {
         if i == 0 {
             continue;
         }
-        res = res * val + c;
+        res = res * val + *c;
     }
 
     res
