@@ -35,7 +35,7 @@ where
 
         (
             w.iter()
-                .map(|val| val * self.get_sample_rate() / (2. * PI))
+                .map(|&val| val * self.get_sample_rate() / (2. * PI))
                 .collect(),
             h,
         )
