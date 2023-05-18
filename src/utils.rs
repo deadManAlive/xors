@@ -19,22 +19,22 @@ pub fn linspace(start: f64, stop: f64, num: usize) -> Vec<f64> {
 /// Polynomial evaluating function
 /// based on Horner's method.
 ///
-/// * `coeffs`: coefficient matrix with index corresponds to polynomial coefficient index.
+/// * `k`: coefficient matrix with index corresponds to polynomial coefficient index.
 /// * `val`: value to evaluate.
 ///
 /// Generic is used so it is possible to evaluate on various types, including complex.
-pub fn polyeval<T: Float, U>(coeffs: Vec<T>, val: U) -> U
+pub fn polyeval<T: Float, U>(k: Vec<T>, val: U) -> U
 where
     U: Default + Copy + From<T> + Mul<U>,
     <U as Mul>::Output: Add<T, Output = U>,
 {
-    if coeffs.is_empty() {
+    if k.is_empty() {
         return Default::default();
     }
 
-    let mut res = U::from(*coeffs.last().unwrap());
+    let mut res = U::from(*k.last().unwrap());
 
-    for (i, c) in coeffs.iter().rev().enumerate() {
+    for (i, c) in k.iter().rev().enumerate() {
         if i == 0 {
             continue;
         }
