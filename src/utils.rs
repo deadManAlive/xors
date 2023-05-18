@@ -2,7 +2,11 @@
 
 use std::ops::{Add, Mul};
 
-use num::Float;
+use num::{
+    complex::{Complex64, ComplexFloat},
+    Float, Zero,
+};
+use rustfft::FftPlanner;
 
 pub fn linspace(start: f64, stop: f64, num: usize) -> Vec<f64> {
     let mut res: Vec<f64> = Vec::new();
@@ -42,6 +46,29 @@ where
     }
 
     res
+}
+
+pub fn polymul(c0: &[f64], c1: &[f64]) -> Vec<f64> {
+    let res_deg = c0.len() + c1.len() - 1;
+
+    let mut planner = FftPlanner::new();
+    let fft = planner.plan_fft_forward(res_deg);
+    let ifft = planner.plan_fft_inverse(res_deg);
+
+    let mut w0: Vec<Complex64> = c0.iter().map(Complex64::from).collect();
+    let mut w1: Vec<Complex64> = c1.iter().map(Complex64::from).collect();
+
+    w0.resize(res_deg, Complex64::zero());
+    w1.resize(res_deg, Complex64::zero());
+
+    fft.process(&mut w0);
+    fft.process(&mut w1);
+
+    let mut res: Vec<Complex64> = w0.iter().zip(w1.iter()).map(|(a, b)| a * b).collect();
+
+    ifft.process(&mut res);
+
+    res.iter().map(|val| val.abs() / (res_deg as f64)).collect() // NOTE: who could guessed the ifft process isn't normalized?
 }
 
 #[cfg(test)]
